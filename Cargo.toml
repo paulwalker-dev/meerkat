@@ -5,7 +5,7 @@ edition = "2021"
 
 authors = ["Paul W."]
 license = "MIT"
-homepage = "https://github.com/LegoLoverGo/meerkat"
+homepage = "https://github.com/paulwalker-dev/meerkat"
 description = "Parses a TOML file and outputs a JSON file"
 
 [[bin]]
