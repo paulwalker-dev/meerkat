@@ -1,17 +1,26 @@
 use clap::Parser;
 use std::fs;
-use std::io;
+use std::io::{self, Write};
 use std::path::Path;
 
 #[derive(Parser, Debug)]
 struct Args {
+  /// Input TOML file
   input: String,
+
+  /// Output JSON file
+  #[clap(short, long)]
+  out: Option<String>,
 }
 
 fn main() -> Result<(), io::Error> {
   let args = Args::parse();
   let toml_contents = parse_toml_file(&args.input)?;
-  write_json_file(basename(&args.input) + ".json", toml_contents)?;
+  let output_path = match args.out {
+    Some(path) => path,
+    None => basename(&args.input) + ".json",
+  };
+  write_json_file(output_path, toml_contents)?;
   Ok(())
 }
 
@@ -31,6 +40,12 @@ fn basename(path: &str) -> String {
 
 fn write_json_file(path: String, value: toml::Value) -> Result<(), io::Error> {
   let json_string = serde_json::to_string(&value)?;
+  if path == "-" {
+    let stdout = io::stdout();
+    let mut handle = stdout.lock();
+    handle.write_all((json_string + "\n").as_bytes())?;
+    return Ok(());
+  }
   fs::write(path, json_string)?;
   Ok(())
 }
