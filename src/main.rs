@@ -1,6 +1,6 @@
 use clap::Parser;
 use std::fs;
-use std::io::{self, Write};
+use std::io;
 use std::path::Path;
 
 #[derive(Parser, Debug)]
@@ -41,9 +41,7 @@ fn basename(path: &str) -> String {
 fn write_json_file(path: String, value: toml::Value) -> Result<(), io::Error> {
   let json_string = serde_json::to_string(&value)?;
   if path == "-" {
-    let stdout = io::stdout();
-    let mut handle = stdout.lock();
-    handle.write_all((json_string + "\n").as_bytes())?;
+    print!("{}", json_string);
     return Ok(());
   }
   fs::write(path, json_string)?;
